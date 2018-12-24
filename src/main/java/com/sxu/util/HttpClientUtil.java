@@ -1,11 +1,8 @@
-package com.emep.changzhi.analyse.utils;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+package com.sxu.util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.sxu.entity.JsonEntity;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -19,6 +16,10 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author lifei
@@ -101,9 +102,13 @@ public class HttpClientUtil {
                 if (entity != null) {
                     // 打印响应内容
                     System.out.println("--------------------------------------");
-                    System.out.println("Response content: " + EntityUtils.toString(entity, "UTF-8"));
+                    //System.out.println("Response content: " + EntityUtils.toString(entity, "UTF-8"));
+
+                    //return JSON.parseObject(EntityUtils.toString(entity, "UTF-8"));
+                    JsonEntity.jsonEntity = JSON.parseObject(EntityUtils.toString(entity, "UTF-8"));
+                    Thread.sleep(1000);
+                    System.out.println("post之后：" + JsonEntity.jsonEntity);
                     System.out.println("--------------------------------------");
-                    return JSON.parseObject(EntityUtils.toString(entity, "UTF-8"));
                 }
             } finally {
                 response.close();
@@ -134,10 +139,16 @@ public class HttpClientUtil {
                 "\"起始日期\":\"2018年12月16日\",\n" +
                 "\"天数\":\"1\"}\n" +
                 "}";
+        String jsonEnterpriseOutletInfoJson = "{\n" +
+                "\"async\": 0,\n" +
+                "\"callback\": \"\",\n" +
+                "\"method\": \"企业列表\",\n" +
+                "\"param\": {}\n" +
+                "}";
         try {
-            HttpClientUtil.httpclientGet("http://127.0.0.1:8080/sysaqiinfo/findSysAqiInfoNoQuery?pageIndex=1&pageSize=1");
-            HttpClientUtil.httpclientPost("http://127.0.0.1:8080/sysaqiinfo/add", parametersHttpclientPost);
-            HttpClientUtil.httpPostWithJSON("http://119.90.57.34:9680/channel/do", jsonStr);
+            //HttpClientUtil.httpclientGet("http://127.0.0.1:8080/sysaqiinfo/findSysAqiInfoNoQuery?pageIndex=1&pageSize=1");
+            //HttpClientUtil.httpclientPost("http://127.0.0.1:8080/sysaqiinfo/add", parametersHttpclientPost);
+            HttpClientUtil.httpPostWithJSON("http://119.90.57.34:9680/channel/do", jsonEnterpriseOutletInfoJson);
         } catch (Exception e) {
             e.printStackTrace();
         }
