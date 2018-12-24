@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -75,7 +77,7 @@ public class HttpClientUtil {
         System.out.println(result);
     }
 
-    public static void httpPostWithJSON(String url, String json) {
+    public static JSONObject httpPostWithJSON(String url, String json) {
         // 创建默认的httpClient实例
         CloseableHttpClient httpclient = HttpClients.createDefault();
         try {
@@ -101,6 +103,7 @@ public class HttpClientUtil {
                     System.out.println("--------------------------------------");
                     System.out.println("Response content: " + EntityUtils.toString(entity, "UTF-8"));
                     System.out.println("--------------------------------------");
+                    return JSON.parseObject(EntityUtils.toString(entity, "UTF-8"));
                 }
             } finally {
                 response.close();
@@ -115,6 +118,7 @@ public class HttpClientUtil {
                 System.out.println("executing httpPostWithJSON error: " + e.getMessage());
             }
         }
+        return null;
     }
 
     public static void main(String[] args) {
@@ -133,7 +137,7 @@ public class HttpClientUtil {
         try {
             HttpClientUtil.httpclientGet("http://127.0.0.1:8080/sysaqiinfo/findSysAqiInfoNoQuery?pageIndex=1&pageSize=1");
             HttpClientUtil.httpclientPost("http://127.0.0.1:8080/sysaqiinfo/add", parametersHttpclientPost);
-            HttpClientUtil.httpPostWithJSON("http://119.90.57.34:9680/channel/do",jsonStr);
+            HttpClientUtil.httpPostWithJSON("http://119.90.57.34:9680/channel/do", jsonStr);
         } catch (Exception e) {
             e.printStackTrace();
         }
