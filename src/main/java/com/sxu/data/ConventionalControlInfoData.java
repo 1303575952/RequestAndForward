@@ -1,6 +1,5 @@
 package com.sxu.data;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sxu.dao.JDBCDao;
@@ -53,28 +52,28 @@ public class ConventionalControlInfoData {
                     String feasibleDustRemovalCostValue = feasibleJson.getJSONObject("除尘所需成本").getString("数值");
 
                     addConventionalControlInfo = conn.prepareStatement("insert into conventional_control_info values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-                    addConventionalControlInfo.setString(1, enterpriseName);
-                    addConventionalControlInfo.setString(2, outletName);
-                    addConventionalControlInfo.setString(3, date);
-                    addConventionalControlInfo.setString(4, time);
-                    addConventionalControlInfo.setString(5, feasibleNoxDischargeUnit);
-                    addConventionalControlInfo.setString(6, feasibleNoxDischargeAmount);
-                    addConventionalControlInfo.setString(7, feasibleNitrogenRemovalEfficiencyUnit);
-                    addConventionalControlInfo.setString(8, feasibleNitrogenRemovalEfficiencyValue);
-                    addConventionalControlInfo.setString(9, feasibleNitrogenRemovalCostUnit);
-                    addConventionalControlInfo.setString(10, feasibleNitrogenRemovalCostValue);
-                    addConventionalControlInfo.setString(11, feasibleSo2DischargeUnit);
-                    addConventionalControlInfo.setString(12, feasibleSo2DischargeAmount);
-                    addConventionalControlInfo.setString(13, feasibleDesulfurizationEfficiencyUnit);
-                    addConventionalControlInfo.setString(14, feasibleDesulfurizationEfficiencyValue);
-                    addConventionalControlInfo.setString(15, feasibleDesulfurizationCostUnit);
-                    addConventionalControlInfo.setString(16, feasibleDesulfurizationCostValue);
-                    addConventionalControlInfo.setString(17, feasibleDustDischargeUnit);
-                    addConventionalControlInfo.setString(18, feasibleDustDischargeAmount);
-                    addConventionalControlInfo.setString(19, feasibleDustRemovalEfficiencyUnit);
-                    addConventionalControlInfo.setString(20, feasibleDustRemovalEfficiencyValue);
-                    addConventionalControlInfo.setString(21, feasibleDustRemovalCostUnit);
-                    addConventionalControlInfo.setString(22, feasibleDustRemovalCostValue);
+                    addConventionalControlInfo.setString(1,enterpriseName);
+                    addConventionalControlInfo.setString(2,outletName);
+                    addConventionalControlInfo.setString(3,date);
+                    addConventionalControlInfo.setString(4,time);
+                    addConventionalControlInfo.setString(5,feasibleNoxDischargeUnit);
+                    addConventionalControlInfo.setString(6,feasibleNoxDischargeAmount);
+                    addConventionalControlInfo.setString(7,feasibleNitrogenRemovalEfficiencyUnit);
+                    addConventionalControlInfo.setString(8,feasibleNitrogenRemovalEfficiencyValue);
+                    addConventionalControlInfo.setString(9,feasibleNitrogenRemovalCostUnit);
+                    addConventionalControlInfo.setString(10,feasibleNitrogenRemovalCostValue);
+                    addConventionalControlInfo.setString(11,feasibleSo2DischargeUnit);
+                    addConventionalControlInfo.setString(12,feasibleSo2DischargeAmount);
+                    addConventionalControlInfo.setString(13,feasibleDesulfurizationEfficiencyUnit);
+                    addConventionalControlInfo.setString(14,feasibleDesulfurizationEfficiencyValue);
+                    addConventionalControlInfo.setString(15,feasibleDesulfurizationCostUnit);
+                    addConventionalControlInfo.setString(16,feasibleDesulfurizationCostValue);
+                    addConventionalControlInfo.setString(17,feasibleDustDischargeUnit);
+                    addConventionalControlInfo.setString(18,feasibleDustDischargeAmount);
+                    addConventionalControlInfo.setString(19,feasibleDustRemovalEfficiencyUnit);
+                    addConventionalControlInfo.setString(20,feasibleDustRemovalEfficiencyValue);
+                    addConventionalControlInfo.setString(21,feasibleDustRemovalCostUnit);
+                    addConventionalControlInfo.setString(22,feasibleDustRemovalCostValue);
                     addConventionalControlInfo.execute();
                 }
             }
