@@ -8,10 +8,12 @@ import com.sxu.util.HttpClientUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 public class TaskControlInfoData {
-    public void getTaskControlInfoJson(String url, String json) throws Exception {
+    public void getOutletTaskControlInfo2DB(String url, String json) throws Exception {
         HttpClientUtil.httpPostWithJSON(url, json);
         JSONObject jo = JsonEntity.jsonEntity;
         System.out.println("jo" + jo);
@@ -29,24 +31,52 @@ public class TaskControlInfoData {
                     String time = eachJO.getString("时间");
                     JSONObject taskJson = eachJO.getJSONObject("任务");
                     //氮
-                    String taskNoxDischargeUnit = taskJson.getJSONObject("氮氧化物").getJSONObject("排放量").getString("单位");
-                    String taskNoxDischargeAmount = taskJson.getJSONObject("氮氧化物").getJSONObject("排放量").getString("数值");
-                    String taskNitrogenRemovalEquipmentEfficiencyUnit = taskJson.getJSONObject("脱氮设备治理效率").getString("单位");
-                    String taskNitrogenRemovalEquipmentEfficiencyValue = taskJson.getJSONObject("脱氮设备治理效率").getString("数值");
+                    String taskNoxDischargeUnit = "0";
+                    String taskNoxDischargeAmount = "0";
+                    String taskNitrogenRemovalEquipmentEfficiencyUnit = "0";
+                    String taskNitrogenRemovalEquipmentEfficiencyValue = "0";
+                    if (taskJson.getJSONObject("氮氧化物") != null && !"{}".equals(taskJson.getJSONObject("氮氧化物").toString())) {
+                        taskNoxDischargeUnit = taskJson.getJSONObject("氮氧化物").getJSONObject("排放量").getString("单位");
+                        taskNoxDischargeAmount = taskJson.getJSONObject("氮氧化物").getJSONObject("排放量").getString("数值");
+                    }
+                    if (taskJson.getJSONObject("脱氮设备治理效率") != null && !"{}".equals(taskJson.getJSONObject("脱氮设备治理效率").toString())) {
+                        taskNitrogenRemovalEquipmentEfficiencyUnit = taskJson.getJSONObject("脱氮设备治理效率").getString("单位");
+                        taskNitrogenRemovalEquipmentEfficiencyValue = taskJson.getJSONObject("脱氮设备治理效率").getString("数值");
+                    }
 
                     //硫
-                    String taskSo2DischargeUnit = taskJson.getJSONObject("二氧化硫").getJSONObject("排放量").getString("单位");
-                    String taskSo2DischargeAmount = taskJson.getJSONObject("二氧化硫").getJSONObject("排放量").getString("数值");
-                    String taskDesulfurizationEquipmentEfficiencyUnit = taskJson.getJSONObject("脱硫设备治理效率").getString("单位");
-                    String taskDesulfurizationEquipmentEfficiencyValue = taskJson.getJSONObject("脱硫设备治理效率").getString("单位");
+                    String taskSo2DischargeUnit = "0";
+                    String taskSo2DischargeAmount = "0";
+                    String taskDesulfurizationEquipmentEfficiencyUnit = "0";
+                    String taskDesulfurizationEquipmentEfficiencyValue = "0";
+                    if (taskJson.getJSONObject("二氧化硫") != null && !"{}".equals(taskJson.getJSONObject("二氧化硫").toString())) {
+                        taskSo2DischargeUnit = taskJson.getJSONObject("二氧化硫").getJSONObject("排放量").getString("单位");
+                        taskSo2DischargeAmount = taskJson.getJSONObject("二氧化硫").getJSONObject("排放量").getString("数值");
+                    }
+                    if (taskJson.getJSONObject("脱硫设备治理效率") != null && !"{}".equals(taskJson.getJSONObject("脱硫设备治理效率").toString())) {
+                        taskDesulfurizationEquipmentEfficiencyUnit = taskJson.getJSONObject("脱硫设备治理效率").getString("单位");
+                        taskDesulfurizationEquipmentEfficiencyValue = taskJson.getJSONObject("脱硫设备治理效率").getString("单位");
+                    }
                     //尘
-                    String taskDustDischargeUnit = taskJson.getJSONObject("烟尘").getJSONObject("排放量").getString("单位");
-                    String taskDustDischargeAmount = taskJson.getJSONObject("烟尘").getJSONObject("排放量").getString("数值");
-                    String taskDustRemovalEquipmentEfficiencyUnit = taskJson.getJSONObject("除尘设备治理效率").getString("单位");
-                    String taskDustRemovalEquipmentEfficiencyValue = taskJson.getJSONObject("除尘设备治理效率").getString("数值");
-
-                    String limitedYieldUnit = taskJson.getJSONObject("限产量").getString("单位");
-                    String limitedYieldValue = taskJson.getJSONObject("限产量").getString("数值");
+                    String taskDustDischargeUnit = "0";
+                    String taskDustDischargeAmount = "0";
+                    String taskDustRemovalEquipmentEfficiencyUnit = "0";
+                    String taskDustRemovalEquipmentEfficiencyValue = "0";
+                    if (taskJson.getJSONObject("烟尘") != null && !"{}".equals(taskJson.getJSONObject("烟尘").toString())) {
+                        taskDustDischargeUnit = taskJson.getJSONObject("烟尘").getJSONObject("排放量").getString("单位");
+                        taskDustDischargeAmount = taskJson.getJSONObject("烟尘").getJSONObject("排放量").getString("数值");
+                    }
+                    if (taskJson.getJSONObject("除尘设备治理效率") != null && !"{}".equals(taskJson.getJSONObject("除尘设备治理效率").toString())) {
+                        taskDustRemovalEquipmentEfficiencyUnit = taskJson.getJSONObject("除尘设备治理效率").getString("单位");
+                        taskDustRemovalEquipmentEfficiencyValue = taskJson.getJSONObject("除尘设备治理效率").getString("数值");
+                    }
+                    //限产量
+                    String limitedYieldUnit = "0";
+                    String limitedYieldValue = "0";
+                    if (taskJson.getJSONObject("限产量") != null && !"{}".equals(taskJson.getJSONObject("限产量").toString())) {
+                        limitedYieldUnit = taskJson.getJSONObject("限产量").getString("单位");
+                        limitedYieldValue = taskJson.getJSONObject("限产量").getString("数值");
+                    }
 
                     String isStopProduction = taskJson.getString("是否停产");
 
@@ -78,17 +108,40 @@ public class TaskControlInfoData {
         }
     }
 
-    public static void main(String[] args) throws Exception {
-        String url = "http://119.90.57.34:9680/channel/do";
+    /**
+     * 根据企业名和排口，把任务管控数据入库
+     */
+    public String generateTaskControlInfoRequestJson(String method, String enterpriseName, String outletName) {
         String jsonStr = "{\n" +
                 "\"async\": 0,\n" +
                 "\"callback\": \"\",\n" +
-                "\"method\": \"任务管控\",\n" +
-                "\"param\": {\"企业名称\" : \"沁源县兴茂煤化有限公司\",\n" +
-                "\t\"监控点名称\" : \"焦炉烟囱排口\",\n" +
+                "\"method\": \"" + method + "\",\n" +
+                "\"param\": {\"企业名称\" : \"" + enterpriseName + "\",\n" +
+                "\t\"监控点名称\" : \"" + outletName + "\",\n" +
                 "\t\"起始日期\" : \"2018年12月15日\",\n" +
                 "\t\"天数\" : \"1\"}\n" +
                 "}";
-        new TaskControlInfoData().getTaskControlInfoJson(url, jsonStr);
+        return jsonStr;
+    }
+
+    public void putDailyOutletTaskControlInfo2DB() throws Exception {
+        String url = "http://119.90.57.34:9680/channel/do";
+        HashMap<String, HashSet<String>> enterpriseOutletMap = EnterpriseOutletInfoData.getEnterpriseOutletMap();
+        for (Map.Entry<String, HashSet<String>> entry : enterpriseOutletMap.entrySet()) {
+            String enterpriseName = entry.getKey();
+            HashSet<String> hs = entry.getValue();
+            for (String str : hs) {
+                String outletName = str;
+                String jsonStr = generateTaskControlInfoRequestJson("任务管控", enterpriseName, outletName);
+                getOutletTaskControlInfo2DB(url, jsonStr);
+            }
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+//        String url = "http://119.90.57.34:9680/channel/do";
+//        String jsonStr = new TaskControlInfoData().generateTaskControlInfoRequestJson("任务管控","山西襄矿集团沁县华安焦化有限公司","脱硫脱硝设施出口");
+//        new TaskControlInfoData().getOutletTaskControlInfo2DB(url, jsonStr);
+        new TaskControlInfoData().putDailyOutletTaskControlInfo2DB();
     }
 }

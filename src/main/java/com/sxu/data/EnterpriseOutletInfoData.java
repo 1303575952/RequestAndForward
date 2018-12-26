@@ -79,16 +79,21 @@ public class EnterpriseOutletInfoData {
         return enterpriseOutletMap;
     }
 
-    public static void main(String[] args) throws Exception {
-        /*String url = "http://119.90.57.34:9680/channel/do";
+    public static void putEnterpriseOutletInfo2DB() throws Exception {
+        String url = "http://119.90.57.34:9680/channel/do";
         String jsonStr = "{\n" +
                 "\t\"async\": 0,\n" +
                 "\t\"callback\": \"\",\n" +
                 "\t\"method\": \"企业列表\",\n" +
                 "\t\"param\": {}\n" +
                 "}";
-        new EnterpriseOutletInfoData().getEntterpriseOutletInfoJson(url, jsonStr);*/
-        HashMap<String, HashSet<String>> enterpriseOutletMap = EnterpriseOutletInfoData.getEnterpriseOutletMap();
+        new EnterpriseOutletInfoData().getEntterpriseOutletInfoJson(url, jsonStr);
+    }
+
+    public static void main(String[] args) throws Exception {
+        EnterpriseOutletInfoData.putEnterpriseOutletInfo2DB();
+        //查看数据库中的企业和排口
+        /*HashMap<String, HashSet<String>> enterpriseOutletMap = EnterpriseOutletInfoData.getEnterpriseOutletMap();
         for (Map.Entry<String, HashSet<String>> entry : enterpriseOutletMap.entrySet()) {
             System.out.print(entry.getKey() + "\t");
             HashSet<String> hs = entry.getValue();
@@ -96,6 +101,6 @@ public class EnterpriseOutletInfoData {
                 System.out.print(str + ";");
             }
             System.out.println();
-        }
+        }*/
     }
 }

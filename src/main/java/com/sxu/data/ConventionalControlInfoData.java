@@ -46,15 +46,15 @@ public class ConventionalControlInfoData {
                     String feasibleNitrogenRemovalCostUnit = "0";
                     String feasibleNitrogenRemovalCostValue = "0";
 
-                    if (feasibleJson.getJSONObject("氮氧化物") != null && !"".equals(feasibleJson.getJSONObject("氮氧化物"))) {
+                    if (feasibleJson.getJSONObject("氮氧化物") != null && !"{}".equals(feasibleJson.getJSONObject("氮氧化物").toString())) {
                         feasibleNoxDischargeUnit = feasibleJson.getJSONObject("氮氧化物").getJSONObject("排放量").getString("单位");
                         feasibleNoxDischargeAmount = feasibleJson.getJSONObject("氮氧化物").getJSONObject("排放量").getString("数值");
                     }
-                    if (feasibleJson.getJSONObject("脱氮效率") != null && !"".equals(feasibleJson.getJSONObject("脱氮效率"))) {
+                    if (feasibleJson.getJSONObject("脱氮效率") != null && !"{}".equals(feasibleJson.getJSONObject("脱氮效率").toString())) {
                         feasibleNitrogenRemovalEfficiencyUnit = feasibleJson.getJSONObject("脱氮效率").getString("单位");
                         feasibleNitrogenRemovalEfficiencyValue = feasibleJson.getJSONObject("脱氮效率").getString("数值");
                     }
-                    if (feasibleJson.getJSONObject("脱氮所需成本") != null && !"".equals(feasibleJson.getJSONObject("脱氮所需成本"))) {
+                    if (feasibleJson.getJSONObject("脱氮所需成本") != null && !"{}".equals(feasibleJson.getJSONObject("脱氮所需成本").toString())) {
                         feasibleNitrogenRemovalCostUnit = feasibleJson.getJSONObject("脱氮所需成本").getString("单位");
                         feasibleNitrogenRemovalCostValue = feasibleJson.getJSONObject("脱氮所需成本").getString("数值");
                     }
@@ -65,15 +65,15 @@ public class ConventionalControlInfoData {
                     String feasibleDesulfurizationEfficiencyValue = "0";
                     String feasibleDesulfurizationCostUnit = "0";
                     String feasibleDesulfurizationCostValue = "0";
-                    if (feasibleJson.getJSONObject("二氧化硫") != null && !"".equals(feasibleJson.getJSONObject("二氧化硫"))) {
+                    if (feasibleJson.getJSONObject("二氧化硫") != null && !"{}".equals(feasibleJson.getJSONObject("二氧化硫").toString())) {
                         feasibleSo2DischargeUnit = feasibleJson.getJSONObject("二氧化硫").getJSONObject("排放量").getString("单位");
                         feasibleSo2DischargeAmount = feasibleJson.getJSONObject("二氧化硫").getJSONObject("排放量").getString("数值");
                     }
-                    if (feasibleJson.getJSONObject("脱硫效率") != null && !"".equals(feasibleJson.getJSONObject("脱硫效率"))) {
+                    if (feasibleJson.getJSONObject("脱硫效率") != null && !"{}".equals(feasibleJson.getJSONObject("脱硫效率").toString())) {
                         feasibleDesulfurizationEfficiencyUnit = feasibleJson.getJSONObject("脱硫效率").getString("单位");
                         feasibleDesulfurizationEfficiencyValue = feasibleJson.getJSONObject("脱硫效率").getString("单位");
                     }
-                    if (feasibleJson.getJSONObject("脱硫所需成本") != null && !"".equals(feasibleJson.getJSONObject("脱硫所需成本"))) {
+                    if (feasibleJson.getJSONObject("脱硫所需成本") != null && !"{}".equals(feasibleJson.getJSONObject("脱硫所需成本").toString())) {
                         feasibleDesulfurizationCostUnit = feasibleJson.getJSONObject("脱硫所需成本").getString("单位");
                         feasibleDesulfurizationCostValue = feasibleJson.getJSONObject("脱硫所需成本").getString("数值");
                     }
@@ -84,15 +84,15 @@ public class ConventionalControlInfoData {
                     String feasibleDustRemovalEfficiencyValue = "0";
                     String feasibleDustRemovalCostUnit = "0";
                     String feasibleDustRemovalCostValue = "0";
-                    if (feasibleJson.getJSONObject("烟尘") != null && !"".equals(feasibleJson.getJSONObject("烟尘"))) {
+                    if (feasibleJson.getJSONObject("烟尘") != null && !"{}".equals(feasibleJson.getJSONObject("烟尘").toString())) {
                         feasibleDustDischargeUnit = feasibleJson.getJSONObject("烟尘").getJSONObject("排放量").getString("单位");
                         feasibleDustDischargeAmount = feasibleJson.getJSONObject("烟尘").getJSONObject("排放量").getString("数值");
                     }
-                    if (feasibleJson.getJSONObject("除尘效率") != null && !"".equals(feasibleJson.getJSONObject("除尘效率"))) {
+                    if (feasibleJson.getJSONObject("除尘效率") != null && !"{}".equals(feasibleJson.getJSONObject("除尘效率").toString())) {
                         feasibleDustRemovalEfficiencyUnit = feasibleJson.getJSONObject("除尘效率").getString("单位");
                         feasibleDustRemovalEfficiencyValue = feasibleJson.getJSONObject("除尘效率").getString("数值");
                     }
-                    if (feasibleJson.getJSONObject("除尘所需成本") != null && !"".equals(feasibleJson.getJSONObject("除尘所需成本"))) {
+                    if (feasibleJson.getJSONObject("除尘所需成本") != null && !"{}".equals(feasibleJson.getJSONObject("除尘所需成本").toString())) {
                         feasibleDustRemovalCostUnit = feasibleJson.getJSONObject("除尘所需成本").getString("单位");
                         feasibleDustRemovalCostValue = feasibleJson.getJSONObject("除尘所需成本").getString("数值");
                     }
@@ -159,9 +159,9 @@ public class ConventionalControlInfoData {
     }
 
     public static void main(String[] args) throws Exception {
-        String url = "http://119.90.57.34:9680/channel/do";
-        String jsonStr = new ConventionalControlInfoData().generateConventionalControlInfoRequestJson("常规管控","山西襄矿集团沁县华安焦化有限公司","脱硫脱硝设施出口");
-        new ConventionalControlInfoData().getOutletConventionalControlInfo2DB(url, jsonStr);
-        //new ConventionalControlInfoData().putDailyOutletConventionalControlInfo2DB();
+        //String url = "http://119.90.57.34:9680/channel/do";
+        //String jsonStr = new ConventionalControlInfoData().generateConventionalControlInfoRequestJson("常规管控", "山西长信工业有限公司", "2号烧结机尾废气排放口");
+        //new ConventionalControlInfoData().getOutletConventionalControlInfo2DB(url, jsonStr);
+        new ConventionalControlInfoData().putDailyOutletConventionalControlInfo2DB();
     }
 }
