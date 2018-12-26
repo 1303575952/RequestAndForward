@@ -93,7 +93,7 @@ public class EnterpriseOutletInfoData {
             System.out.print(entry.getKey() + "\t");
             HashSet<String> hs = entry.getValue();
             for (String str : hs) {
-                System.out.print(str + " ");
+                System.out.print(str + ";");
             }
             System.out.println();
         }
