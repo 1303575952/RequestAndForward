@@ -17,7 +17,6 @@ public class TaskControlInfoData {
         System.out.println("jo" + jo);
         JSONArray results = jo.getJSONArray("results");
         if (results.size() > 0) {
-            ResultSet rs = null;
             Connection conn = JDBCDao.getConn();
             PreparedStatement addTaskControlInfo = null;
             for (int i = 0; i < results.size(); i++) {

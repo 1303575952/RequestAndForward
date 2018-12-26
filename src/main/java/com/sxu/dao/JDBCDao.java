@@ -10,7 +10,7 @@ public class JDBCDao {
 
     public static String HOST = "localhost";
     public static String PORT = "3306";
-    public static String DATABASE_NAME = "test";
+    public static String DATABASE_NAME = "control";
     public static String USER_NAME = "root";
     public static String PASSWORD = "123456";
 

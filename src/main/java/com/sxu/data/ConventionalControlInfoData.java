@@ -11,13 +11,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class ConventionalControlInfoData {
-    public void getConventionalControlInfoJson(String url, String json) throws Exception {
+    /**
+     *
+     * @param url 接口地址
+     * @param json 构造好的请求json
+     * @throws Exception
+     */
+    public void getConventionalControlInfoJson2DB(String url, String json) throws Exception {
         HttpClientUtil.httpPostWithJSON(url, json);
         JSONObject jo = JsonEntity.jsonEntity;
         System.out.println("jo" + jo);
         JSONArray results = jo.getJSONArray("results");
         if (results.size() > 0) {
-            ResultSet rs = null;
             Connection conn = JDBCDao.getConn();
             PreparedStatement addConventionalControlInfo = null;
             for (int i = 0; i < results.size(); i++) {
@@ -81,18 +86,26 @@ public class ConventionalControlInfoData {
             System.out.println("连接关闭");
         }
     }
-
-    public static void main(String[] args) throws Exception {
-        String url = "http://119.90.57.34:9680/channel/do";
+    /**
+     * 根据企业名和排口，把常规管控数据入库
+     */
+    public String generateConventionalControlInfoRequestJson(String method,String enterpriseName,String outletName){
         String jsonStr = "{\n" +
                 "\"async\":0,\n" +
                 "\"callback\":\"\",\n" +
-                "\"method\":\"常规管控\",\n" +
-                "\"param\": {\"企业名称\":\"沁源县兴茂煤化有限公司\",\n" +
-                "\"监控点名称\":\"焦炉烟囱排口\",\n" +
-                "\"起始日期\":\"2018年12月16日\",\n" +
+                "\"method\":\""+method+"\",\n" +
+                "\"param\": {\""+enterpriseName+"\":\"沁源县兴茂煤化有限公司\",\n" +
+                "\"监控点名称\":\""+outletName+"\",\n" +
+                "\"起始日期\":\"2018年12月15日\",\n" +
                 "\"天数\":\"1\"}\n" +
                 "}";
-        new ConventionalControlInfoData().getConventionalControlInfoJson(url, jsonStr);
+        return jsonStr;
+    }
+
+    public static void main(String[] args) throws Exception {
+        String url = "http://119.90.57.34:9680/channel/do";
+        String jsonStr = new ConventionalControlInfoData().generateConventionalControlInfoRequestJson("常规管控","沁源县兴茂煤化有限公司","焦炉烟囱排口");
+
+        new ConventionalControlInfoData().getConventionalControlInfoJson2DB(url, jsonStr);
     }
 }
