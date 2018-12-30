@@ -4,6 +4,7 @@ import com.sxu.controller.EmissionReduction;
 import com.sxu.entity.DischargeAmount;
 import com.sxu.entity.EnterpriseOutletInfo;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -36,7 +37,12 @@ public class ConventionalControl2CSV extends TimerTask {
                     }
                     Map<EnterpriseOutletInfo, DischargeAmount> conventionalControlMap = EmissionReduction.getConventionControlInfo(date, time, removalEfficiency[j]);
                     for (int k = 0; k < industry.length; k++) {
-                        String conventionalControlCSVPath = "C:/ftproot/reduction" + date + time + industry + removalId;
+                        String conventionalControlCSVPath = "C:/ftproot/reduction/" + date + time + "/" + industry[k] + removalId + ".csv";
+                        File file = new File(conventionalControlCSVPath);
+                        File fileParent = file.getParentFile();
+                        if (!fileParent.exists()) {
+                            fileParent.mkdirs();
+                        }
                         EmissionReduction.generateConventionControlCSV(conventionalControlMap, industry[k], conventionalControlCSVPath);
                     }
                 }
