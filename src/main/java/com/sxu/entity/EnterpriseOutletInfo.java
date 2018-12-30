@@ -2,11 +2,10 @@ package com.sxu.entity;
 
 import java.io.Serializable;
 
-public class EnterpriseOutletInfo implements Serializable {
+public class EnterpriseOutletInfo{
 
     private String enterpriseName;
     private String outletName;
-    private String createDate = String.valueOf(System.currentTimeMillis());
 
     public String getEnterpriseName() {
         return enterpriseName;
@@ -24,18 +23,10 @@ public class EnterpriseOutletInfo implements Serializable {
         this.outletName = outletName;
     }
 
-    public String getCreateDate() {
-        return createDate;
-    }
 
-    public void setCreateDate(String createDate) {
-        this.createDate = createDate;
-    }
-
-    public EnterpriseOutletInfo(String enterpriseName, String outletName, String createDate) {
+    public EnterpriseOutletInfo(String enterpriseName, String outletName) {
         this.enterpriseName = enterpriseName;
         this.outletName = outletName;
-        this.createDate = createDate;
     }
 
     public EnterpriseOutletInfo() {
@@ -47,7 +38,6 @@ public class EnterpriseOutletInfo implements Serializable {
         return "EnterpriseOutletInfo{" +
                 "enterpriseName='" + enterpriseName + '\'' +
                 ", outletName='" + outletName + '\'' +
-                ", createDate='" + createDate + '\'' +
                 '}';
     }
 }

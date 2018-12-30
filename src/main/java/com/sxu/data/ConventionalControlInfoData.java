@@ -71,7 +71,7 @@ public class ConventionalControlInfoData {
                     }
                     if (feasibleJson.getJSONObject("脱硫效率") != null && !"{}".equals(feasibleJson.getJSONObject("脱硫效率").toString())) {
                         feasibleDesulfurizationEfficiencyUnit = feasibleJson.getJSONObject("脱硫效率").getString("单位");
-                        feasibleDesulfurizationEfficiencyValue = feasibleJson.getJSONObject("脱硫效率").getString("单位");
+                        feasibleDesulfurizationEfficiencyValue = feasibleJson.getJSONObject("脱硫效率").getString("数值");
                     }
                     if (feasibleJson.getJSONObject("脱硫所需成本") != null && !"{}".equals(feasibleJson.getJSONObject("脱硫所需成本").toString())) {
                         feasibleDesulfurizationCostUnit = feasibleJson.getJSONObject("脱硫所需成本").getString("单位");
