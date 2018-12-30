@@ -131,20 +131,20 @@ public class ConventionalControlInfoData {
     /**
      * 根据企业名和排口，把常规管控数据入库
      */
-    public String generateConventionalControlInfoRequestJson(String method, String enterpriseName, String outletName) {
+    public String generateConventionalControlInfoRequestJson(String method, String enterpriseName, String outletName, String date) {
         String jsonStr = "{\n" +
                 "\"async\":0,\n" +
                 "\"callback\":\"\",\n" +
                 "\"method\":\"" + method + "\",\n" +
                 "\"param\": {\"企业名称\":\"" + enterpriseName + "\",\n" +
                 "\"监控点名称\":\"" + outletName + "\",\n" +
-                "\"起始日期\":\"2018年12月15日\",\n" +
+                "\"起始日期\":\"" + date + "\",\n" +
                 "\"天数\":\"1\"}\n" +
                 "}";
         return jsonStr;
     }
 
-    public void putDailyOutletConventionalControlInfo2DB() throws Exception {
+    public void putDailyOutletConventionalControlInfo2DB(String date) throws Exception {
         String url = "http://119.90.57.34:9680/channel/do";
         HashMap<String, HashSet<String>> enterpriseOutletMap = EnterpriseOutletInfoData.getEnterpriseOutletMap();
         for (Map.Entry<String, HashSet<String>> entry : enterpriseOutletMap.entrySet()) {
@@ -152,7 +152,7 @@ public class ConventionalControlInfoData {
             HashSet<String> hs = entry.getValue();
             for (String str : hs) {
                 String outletName = str;
-                String jsonStr = generateConventionalControlInfoRequestJson("常规管控", enterpriseName, outletName);
+                String jsonStr = generateConventionalControlInfoRequestJson("常规管控", enterpriseName, outletName,date);
                 getOutletConventionalControlInfo2DB(url, jsonStr);
             }
         }
@@ -162,6 +162,7 @@ public class ConventionalControlInfoData {
         //String url = "http://119.90.57.34:9680/channel/do";
         //String jsonStr = new ConventionalControlInfoData().generateConventionalControlInfoRequestJson("常规管控", "山西长信工业有限公司", "2号烧结机尾废气排放口");
         //new ConventionalControlInfoData().getOutletConventionalControlInfo2DB(url, jsonStr);
-        new ConventionalControlInfoData().putDailyOutletConventionalControlInfo2DB();
+        String date = "2018年12月15日";
+        new ConventionalControlInfoData().putDailyOutletConventionalControlInfo2DB(date);
     }
 }

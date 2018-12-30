@@ -20,7 +20,7 @@ public class EmissionReduction {
      * 找到同一时间同一减排方案的所有企业，参数:日期，时间，减排方案
      * 清华提供的常规管控三种方案，每一条数据里各种污染物的效率是不是都是相同的？这里假设是相同的
      */
-    public Map<EnterpriseOutletInfo, DischargeAmount> getConventionControlInfo(String date, String time, String removalEfficiency) throws Exception {
+    public static Map<EnterpriseOutletInfo, DischargeAmount> getConventionControlInfo(String date, String time, String removalEfficiency) throws Exception {
         ResultSet rs = null;
         Connection conn = JDBCDao.getConn();
         PreparedStatement selectConventionControlInfo =
@@ -50,7 +50,7 @@ public class EmissionReduction {
      * @param industry                 行业
      * @param conventionControlCSVPath 路径
      */
-    public void generateConventionControlCSV(Map<EnterpriseOutletInfo, DischargeAmount> conventionalControlMap, String industry, String conventionControlCSVPath) throws Exception {
+    public static void generateConventionControlCSV(Map<EnterpriseOutletInfo, DischargeAmount> conventionalControlMap, String industry, String conventionControlCSVPath) throws Exception {
         String[] headers = new String[]{"nrow", "ncol", "BC", "CO", "NOx", "OC", "PM10", "PM2.5", "SO2", "VOC", "CO2", "NH3", "TSP"};
         String[][] csvOut = new String[4536][13];
         for (int i = 0; i < csvOut.length; i++) {
