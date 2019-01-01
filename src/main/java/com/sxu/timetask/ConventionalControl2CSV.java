@@ -37,7 +37,7 @@ public class ConventionalControl2CSV extends TimerTask {
                     }
                     Map<EnterpriseOutletInfo, DischargeAmount> conventionalControlMap = EmissionReduction.getConventionControlInfo(date, time, removalEfficiency[j]);
                     for (int k = 0; k < industry.length; k++) {
-                        String conventionalControlCSVPath = "C:/ftproot/reduction/" + date + time + "/" + industry[k] + removalId + ".csv";
+                        String conventionalControlCSVPath = "C:/ftproot/reduction/" + removalId + "/" + date + time + "/" + industry[k] + ".csv";
                         File file = new File(conventionalControlCSVPath);
                         File fileParent = file.getParentFile();
                         if (!fileParent.exists()) {

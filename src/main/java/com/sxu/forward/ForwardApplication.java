@@ -4,7 +4,6 @@ import com.sxu.timetask.ConventionalControl2CSV;
 import com.sxu.timetask.ConventionalControlData2DB;
 import com.sxu.util.TimeUtil;
 
-import java.util.Date;
 import java.util.Timer;
 
 public class ForwardApplication {

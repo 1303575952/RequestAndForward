@@ -44,9 +44,9 @@ public class TimeUtil {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, 2019);
         calendar.set(Calendar.MONTH, 00);
-        calendar.set(Calendar.DAY_OF_MONTH, 01);
-        calendar.set(Calendar.HOUR_OF_DAY, 20);
-        calendar.set(Calendar.MINUTE, 06);
+        calendar.set(Calendar.DAY_OF_MONTH, 02);
+        calendar.set(Calendar.HOUR_OF_DAY, 01);
+        calendar.set(Calendar.MINUTE, 20);
         calendar.set(Calendar.SECOND, 00);
         Date time = calendar.getTime();
         return time;
