@@ -1,8 +1,10 @@
 package com.sxu.forward;
 
 import com.sxu.timetask.ConventionalControl2CSV;
+import com.sxu.timetask.ConventionalControlData2DB;
 import com.sxu.util.TimeUtil;
 
+import java.util.Date;
 import java.util.Timer;
 
 public class ForwardApplication {
@@ -18,8 +20,8 @@ public class ForwardApplication {
     public static void main(String[] args) {
 
         Timer timer = new Timer();
-        //timer.schedule(new ConventionalControlData2DB(),TimeUtil.getSynDBTime());
-        timer.schedule(new ConventionalControl2CSV(), TimeUtil.getSynCSVTime());
+        //timer.schedule(new ConventionalControlData2DB(), TimeUtil.get2DBDate(), 86400000);
+        timer.schedule(new ConventionalControl2CSV(), TimeUtil.get2CSVDate(), 86400000);
     }
 
 }

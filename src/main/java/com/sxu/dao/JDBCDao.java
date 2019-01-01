@@ -19,12 +19,13 @@ public class JDBCDao {
      *
      * @return 数据库连接
      */
-    public static Connection getConn() throws Exception {
+    static Connection connection = null;
+    public synchronized static Connection getConn() throws Exception {
         Class.forName("com.mysql.jdbc.Driver");
         System.out.println("成功加载驱动");
 
         String url = "jdbc:mysql://" + HOST + ":" + PORT + "/" + DATABASE_NAME + "?user=" + USER_NAME + "&password=" + PASSWORD + "&useUnicode=true&characterEncoding=UTF8&serverTimezone=GMT%2B8";
-        Connection connection = DriverManager.getConnection(url);
+        connection = DriverManager.getConnection(url);
         System.out.println("成功获取连接");
         return connection;
     }

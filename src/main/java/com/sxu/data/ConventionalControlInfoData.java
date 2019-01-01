@@ -123,6 +123,7 @@ public class ConventionalControlInfoData {
                     addConventionalControlInfo.execute();
                 }
             }
+            addConventionalControlInfo.close();
             conn.close();
             System.out.println("连接关闭");
         }

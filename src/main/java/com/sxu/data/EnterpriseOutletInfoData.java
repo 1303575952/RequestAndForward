@@ -41,6 +41,7 @@ public class EnterpriseOutletInfoData {
                     addEnterpriseOutletInfo.execute();
                 }
             }
+            addEnterpriseOutletInfo.close();
             conn.close();
             System.out.println("连接关闭");
         }
@@ -73,6 +74,7 @@ public class EnterpriseOutletInfoData {
                 enterpriseOutletMap.put(enterpriseName, hs);
             }
         }
+        selectEnterpriseOutletInfo.close();
         conn.close();
         rs.close();
         System.out.println("连接关闭");

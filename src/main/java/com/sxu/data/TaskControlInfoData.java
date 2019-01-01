@@ -103,6 +103,7 @@ public class TaskControlInfoData {
                     addTaskControlInfo.execute();
                 }
             }
+            addTaskControlInfo.close();
             conn.close();
             System.out.println("连接关闭");
         }

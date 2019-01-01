@@ -41,6 +41,9 @@ public class EmissionReduction {
             conventionalControlMap.put(new EnterpriseOutletInfo(enterpriseName, outletName), new DischargeAmount(feasibleNoxDischargeAmount, feasibleSo2DischargeAmount));
 
         }
+        selectConventionControlInfo.close();
+        conn.close();
+        rs.close();
         return conventionalControlMap;
     }
 

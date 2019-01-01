@@ -47,6 +47,7 @@ public class EnterpriseInfoData {
         }
         printer.flush();
         printer.close();
+        fileWriter.close();
         System.out.println("CSV文件创建成功,文件路径:" + filePath);
     }
 

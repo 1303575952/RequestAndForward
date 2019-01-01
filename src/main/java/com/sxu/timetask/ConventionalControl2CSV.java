@@ -19,7 +19,7 @@ public class ConventionalControl2CSV extends TimerTask {
 
     @Override
     public void run() {
-        String[] industry = {"dianligongre", "gantie", "guolu", "jiaohua", "others", "shiyouhuagong", "shuiniboli"};
+        String[] industry = {"dianligongre", "gangtie", "guolu", "jiaohua", "others", "shiyouhuagong", "shuiniboli"};
         String[] removalEfficiency = {"25", "50", "75"};
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
         String date = sdf.format(new Date());
