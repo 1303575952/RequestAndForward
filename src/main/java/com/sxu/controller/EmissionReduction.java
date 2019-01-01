@@ -54,6 +54,11 @@ public class EmissionReduction {
         String[] headers = new String[]{"nrow", "ncol", "BC", "CO", "NOx", "OC", "PM10", "PM2.5", "SO2", "VOC", "CO2", "NH3", "TSP"};
         String[][] csvOut = new String[4536][13];
         for (int i = 0; i < csvOut.length; i++) {
+            for (int j = 0; j < csvOut[0].length; j++) {
+                csvOut[i][j] = "0";
+            }
+        }
+        for (int i = 0; i < csvOut.length; i++) {
             csvOut[i][0] = String.valueOf(i / 63 + 1);
             csvOut[i][1] = String.valueOf(i % 63 + 1);
         }
@@ -69,8 +74,8 @@ public class EmissionReduction {
             //企业位置ID确定写入的位置
             if (industry.equals(EnterpriseInfoData.enterprisePropertyMap.get(enterpriseName).getIndustry())) {
                 Integer cellId = Integer.valueOf(EnterpriseInfoData.enterprisePropertyMap.get(enterpriseName).getIndustry());
-                csvOut[cellId + 1][4] += feasibleNoxDischargeAmount;
-                csvOut[cellId + 1][8] += feasibleSo2DischargeAmount;
+                csvOut[cellId + 1][4] = String.valueOf(Float.valueOf(csvOut[cellId + 1][4]) + feasibleNoxDischargeAmount);
+                csvOut[cellId + 1][8] = String.valueOf(Float.valueOf(csvOut[cellId + 1][8]) + feasibleSo2DischargeAmount);
             }
         }
         //写到文件
