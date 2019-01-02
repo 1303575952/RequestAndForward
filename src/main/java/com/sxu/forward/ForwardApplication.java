@@ -1,6 +1,7 @@
 package com.sxu.forward;
 
 import com.sxu.timetask.ConventionalControl2CSV;
+import com.sxu.timetask.ConventionalControlAvgAndDiff2CSV;
 import com.sxu.timetask.ConventionalControlData2DB;
 import com.sxu.util.TimeUtil;
 
@@ -20,7 +21,8 @@ public class ForwardApplication {
 
         Timer timer = new Timer();
         //timer.schedule(new ConventionalControlData2DB(), TimeUtil.get2DBDate(), 86400000);
-        timer.schedule(new ConventionalControl2CSV(), TimeUtil.get2CSVDate(), 86400000);
+        //timer.schedule(new ConventionalControl2CSV(), TimeUtil.get2CSVDate(), 86400000);
+        timer.schedule(new ConventionalControlAvgAndDiff2CSV(), TimeUtil.get2CSVDate(), 86400000);
     }
 
 }

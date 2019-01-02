@@ -1,5 +1,6 @@
 package com.sxu.util;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -50,5 +51,38 @@ public class TimeUtil {
         calendar.set(Calendar.SECOND, 00);
         Date time = calendar.getTime();
         return time;
+    }
+
+    /**
+     * date加一天
+     *
+     * @param date
+     * @return
+     */
+    public static String dateDayIncrement(String date, int amount) throws Exception {
+        String newDate;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+        Date sDate = sdf.parse(date);
+        Calendar c = Calendar.getInstance();
+        c.setTime(sDate);
+        c.add(Calendar.DAY_OF_MONTH, amount);
+        sDate = c.getTime();
+        newDate = sdf.format(sDate);
+        return newDate;
+
+    }
+
+    public static String dateDeleteChinese(String date){
+        return date.replaceAll("[\u4e00-\u9fa5]+", "");
+    }
+
+    public static String timeHourIncrement(String time, int amount) {
+        String newTime = Integer.valueOf(time.substring(0, time.length() - 1)) + amount + "时";
+        return newTime;
+    }
+
+    public static void main(String[] args) throws Exception {
+        System.out.println(TimeUtil.dateDayIncrement("2018年01月01日", 3));
+        System.out.println(TimeUtil.timeHourIncrement("0时", 7));
     }
 }

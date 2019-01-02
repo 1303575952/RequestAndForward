@@ -4,6 +4,7 @@ import com.sxu.dao.JDBCDao;
 import com.sxu.data.EnterpriseInfoData;
 import com.sxu.entity.DischargeAmount;
 import com.sxu.entity.EnterpriseOutletInfo;
+import com.sxu.util.TimeUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,7 +22,7 @@ public class EmissionReduction {
      * 清华提供的常规管控三种方案，每一条数据里各种污染物的效率是不是都是相同的？这里假设是相同的
      */
     public static Map<EnterpriseOutletInfo, DischargeAmount> getConventionControlInfo(String date, String time, String removalEfficiency) throws Exception {
-        ResultSet rs = null;
+        ResultSet rs;
         Connection conn = JDBCDao.getConn();
         PreparedStatement selectConventionControlInfo =
                 conn.prepareStatement("select enterprise_name,outlet_name,feasible_nox_discharge_amount,feasible_so2_discharge_amount from conventional_control_info where date=? and time=? and feasible_nitrogen_removal_efficiency_value=? and feasible_desulfurization_efficiency_value=?");
@@ -84,4 +85,171 @@ public class EmissionReduction {
         //写到文件
         EnterpriseInfoData.writeCsv(headers, csvOut, conventionControlCSVPath);
     }
+
+    /**
+     * 从startDate+startTime开始的period天内的排放数据，period个表格，每个表格存一天的年化总量（不存其他数据）
+     *
+     * @param startDate
+     * @param startTime
+     * @param period
+     * @param industry
+     * @param removalEfficiency
+     * @return
+     */
+
+    public static String[][][] generateConventionControlArray(String startDate, String startTime, int period, String industry, String removalEfficiency) throws Exception {
+        String[][][] perDayEmissionInPeriod = new String[period][4536][11];
+        //初始化为零
+        for (int i = 0; i < period; i++) {
+            for (int j = 0; j < perDayEmissionInPeriod[0].length; j++) {
+                for (int k = 0; k < perDayEmissionInPeriod[0][0].length; k++) {
+                    perDayEmissionInPeriod[i][j][k] = "0";
+                }
+            }
+        }
+        //把每天的数据求和
+        for (int i = 0; i < period; i++) {
+            String date = TimeUtil.dateDayIncrement(startDate, i);
+            //24小时的数据累加
+            for (int j = 0; j < 24; j++) {
+                String time = TimeUtil.timeHourIncrement(startTime, j);
+                Map<EnterpriseOutletInfo, DischargeAmount> conventionControlInfoMap = EmissionReduction.getConventionControlInfo(date, time, removalEfficiency);
+                for (Map.Entry<EnterpriseOutletInfo, DischargeAmount> entry : conventionControlInfoMap.entrySet()) {
+                    EnterpriseOutletInfo eoi = entry.getKey();
+                    DischargeAmount da = entry.getValue();
+                    String enterpriseName = eoi.getEnterpriseName();
+                    String outletName = eoi.getOutletName();
+                    Float feasibleNoxDischargeAmount = Float.valueOf(da.getFeasibleNoxDischargeAmount());
+                    Float feasibleSo2DischargeAmount = Float.valueOf(da.getFeasibleSo2DischargeAmount());
+                    //通过企业名找到行业，企业位置ID
+                    //先确定企业行业，才能确定写入此文件。确定行业符合则排放数据写入
+                    //企业位置ID确定写入的位置
+                    if (industry.equals(EnterpriseInfoData.enterprisePropertyMap.get(enterpriseName).getIndustry())) {
+                        Integer cellId = Integer.valueOf(EnterpriseInfoData.enterprisePropertyMap.get(enterpriseName).getIndustry());
+                        perDayEmissionInPeriod[i][cellId + 1][2] = String.valueOf(Float.valueOf(perDayEmissionInPeriod[i][cellId + 1][2]) + feasibleNoxDischargeAmount);
+                        perDayEmissionInPeriod[i][cellId + 1][6] = String.valueOf(Float.valueOf(perDayEmissionInPeriod[i][cellId + 1][6]) + feasibleSo2DischargeAmount);
+                    }
+                }
+            }
+        }
+        //计算年化
+        for (int i = 0; i < period; i++) {
+            for (int j = 0; j < perDayEmissionInPeriod[0].length; j++) {
+                for (int k = 0; k < perDayEmissionInPeriod[0][0].length; k++) {
+                    perDayEmissionInPeriod[i][j][k] = String.valueOf(Float.valueOf(perDayEmissionInPeriod[i][j][k]) * 365.0f / period / 1000.0f);
+                }
+            }
+        }
+        return perDayEmissionInPeriod;
+    }
+
+    /**
+     * period时间内的平均值
+     *
+     * @param perDayEmissionInPeriod
+     * @return
+     */
+    public static String[][] generateConventionControlAvgArray(String[][][] perDayEmissionInPeriod) {
+        String[][] avgDayEmissionInPeriod = new String[perDayEmissionInPeriod[0].length][perDayEmissionInPeriod[0][0].length];
+        for (int i = 0; i < avgDayEmissionInPeriod.length; i++) {
+            for (int j = 0; j < avgDayEmissionInPeriod[0].length; j++) {
+                float sum = 0;
+                for (int k = 0; k < perDayEmissionInPeriod.length; k++) {
+                    sum = sum + Float.valueOf(perDayEmissionInPeriod[k][i][j]);
+                }
+                avgDayEmissionInPeriod[i][j] = String.valueOf(sum / perDayEmissionInPeriod.length);
+            }
+        }
+        return avgDayEmissionInPeriod;
+    }
+
+    /**
+     * 差值
+     *
+     * @param perDayEmissionInPeriod
+     * @param avgDayEmissionInPeriod
+     * @return
+     */
+    public static String[][][] generateDifferenceConventionControlArray(String[][][] perDayEmissionInPeriod, String[][] avgDayEmissionInPeriod) {
+        String[][][] diffPerDayEmissionInPeriod = new String[perDayEmissionInPeriod.length][perDayEmissionInPeriod[0].length][perDayEmissionInPeriod[0][0].length];
+        for (int i = 0; i < diffPerDayEmissionInPeriod.length; i++) {
+            for (int j = 0; j < diffPerDayEmissionInPeriod[0].length; j++) {
+                for (int k = 0; k < diffPerDayEmissionInPeriod[0][0].length; k++) {
+                    diffPerDayEmissionInPeriod[i][j][k] = String.valueOf(Float.valueOf(perDayEmissionInPeriod[i][j][k]) - Float.valueOf(avgDayEmissionInPeriod[j][k]));
+                }
+            }
+        }
+        return diffPerDayEmissionInPeriod;
+    }
+
+    /**
+     * 把均值写入csv
+     *
+     * @param startDate
+     * @param startTime
+     * @param period
+     * @param industry
+     * @param removalEfficiency
+     * @param avgDayEmissionInPeriodCSVPath
+     * @param diffDayEmissionInPeriodCSVPath
+     * @throws Exception
+     */
+    public static void avgAndDiffDayEmissionInPeriod2CSV(String startDate, String startTime, int period, String industry, String removalEfficiency, String avgDayEmissionInPeriodCSVPath, String diffDayEmissionInPeriodCSVPath) throws Exception {
+        String[][][] perDayEmissionInPeriod = EmissionReduction.generateConventionControlArray(startDate, startTime, period, industry, removalEfficiency);
+        String[][] avgDayEmissionInPeriod = EmissionReduction.generateConventionControlAvgArray(perDayEmissionInPeriod);
+        String[][][] diffPerDayEmissionInPeriod = EmissionReduction.generateDifferenceConventionControlArray(perDayEmissionInPeriod, avgDayEmissionInPeriod);
+
+        String[] headers = new String[]{TimeUtil.dateDeleteChinese(startDate)};
+        String[][] csvOut = new String[4537][13];
+
+        csvOut[0][0] = "nrow";
+        csvOut[0][1] = "ncol";
+        csvOut[0][2] = "BC";
+        csvOut[0][3] = "CO";
+        csvOut[0][4] = "NOx";
+        csvOut[0][5] = "OC";
+        csvOut[0][6] = "PM10";
+        csvOut[0][7] = "PM2.5";
+        csvOut[0][8] = "SO2";
+        csvOut[0][9] = "VOC";
+        csvOut[0][10] = "CO2";
+        csvOut[0][11] = "NH3";
+        csvOut[0][12] = "TSP";
+
+        for (int i = 1; i < csvOut.length; i++) {
+            csvOut[i][0] = String.valueOf((i - 1) / 63 + 1);
+            csvOut[i][1] = String.valueOf((i - 1) % 63 + 1);
+        }
+
+        String[][] csvOutAvg = new String[4537][13];
+        for(int i=0;i<csvOut.length;i++){
+            for(int j=0;j<csvOut[0].length;j++){
+                csvOutAvg[i][j] = csvOut[i][j];
+            }
+        }
+        for (int i = 1; i < csvOutAvg.length; i++) {
+            for (int j = 2; j < csvOutAvg[0].length; j++) {
+                csvOutAvg[i][j] = avgDayEmissionInPeriod[i - 1][j - 2];
+            }
+        }
+
+        String[][] csvOutDiff = new String[4537][13];
+        for(int i=0;i<csvOut.length;i++){
+            for(int j=0;j<csvOut[0].length;j++){
+                csvOutDiff[i][j] = csvOut[i][j];
+            }
+        }
+        for (int i = 1; i < csvOutDiff.length; i++) {
+            for (int j = 2; j < csvOutDiff[0].length; j++) {
+                csvOutDiff[i][j] = "";
+                for (int k = 0; k < diffPerDayEmissionInPeriod.length; k++) {
+                    csvOutDiff[i][j] += diffPerDayEmissionInPeriod[k][i - 1][j - 2] + ";";
+                }
+            }
+        }
+
+        EnterpriseInfoData.writeCsv(headers, csvOutAvg, avgDayEmissionInPeriodCSVPath);
+        EnterpriseInfoData.writeCsv(headers, csvOutDiff, diffDayEmissionInPeriodCSVPath);
+    }
+
 }
