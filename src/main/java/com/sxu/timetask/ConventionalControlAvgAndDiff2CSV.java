@@ -28,7 +28,7 @@ public class ConventionalControlAvgAndDiff2CSV extends TimerTask {
                     removalId = "0003";
                 }
                 String avgDayEmissionInPeriodCSVPath = "C:/ftproot/reduction/" + removalId + "/" + "emiss_" + industry[j] + "_" + removalId + ".csv";
-                String diffDayEmissionInPeriodCSVPath = "C:/ftproot/reduction/" + removalId + "/" + "diff_" + industry[j] + "_" + removalId + ".csv";
+                String diffDayEmissionInPeriodCSVPath = "C:/ftproot/reduction_diff/" + removalId + "/" + "diff_" + industry[j] + "_" + removalId + ".csv";
                 //判断目录是否存在，不存在则创建
                 File avgFile = new File(avgDayEmissionInPeriodCSVPath);
                 File avgFileParent = avgFile.getParentFile();
