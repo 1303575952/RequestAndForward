@@ -4,6 +4,7 @@ import com.sxu.dao.JDBCDao;
 import com.sxu.data.EnterpriseInfoData;
 import com.sxu.entity.DischargeAmount;
 import com.sxu.entity.EnterpriseOutletInfo;
+import com.sxu.entity.EnterpriseProperty;
 import com.sxu.util.TimeUtil;
 
 import java.sql.Connection;
@@ -30,6 +31,7 @@ public class EmissionReduction {
         selectConventionControlInfo.setString(2, time);
         selectConventionControlInfo.setString(3, removalEfficiency);
         selectConventionControlInfo.setString(4, removalEfficiency);
+        //System.out.println(selectConventionControlInfo.toString());
         rs = selectConventionControlInfo.executeQuery();
 
         Map<EnterpriseOutletInfo, DischargeAmount> conventionalControlMap = new HashMap<EnterpriseOutletInfo, DischargeAmount>();
@@ -55,6 +57,9 @@ public class EmissionReduction {
      * @param conventionControlCSVPath 路径
      */
     public static void generateConventionControlCSV(Map<EnterpriseOutletInfo, DischargeAmount> conventionalControlMap, String industry, String conventionControlCSVPath) throws Exception {
+        String enterpriseLocationFilePath = System.getProperty("user.dir") + "/src/main/resources/data/enterprise_location.csv";
+        Map<String, EnterpriseProperty> enterprisePropertyMap = EnterpriseInfoData.getEnterprisePropertyMap(enterpriseLocationFilePath);
+
         String[] headers = new String[]{"nrow", "ncol", "BC", "CO", "NOx", "OC", "PM10", "PM2.5", "SO2", "VOC", "CO2", "NH3", "TSP"};
         String[][] csvOut = new String[4536][13];
         for (int i = 0; i < csvOut.length; i++) {
@@ -76,8 +81,8 @@ public class EmissionReduction {
             //通过企业名找到行业，企业位置ID
             //先确定企业行业，才能确定写入此文件。确定行业符合则排放数据写入
             //企业位置ID确定写入的位置
-            if (industry.equals(EnterpriseInfoData.enterprisePropertyMap.get(enterpriseName).getIndustry())) {
-                Integer cellId = Integer.valueOf(EnterpriseInfoData.enterprisePropertyMap.get(enterpriseName).getIndustry());
+            if (industry.equals(enterprisePropertyMap.get(enterpriseName).getIndustry())) {
+                Integer cellId = Integer.valueOf(enterprisePropertyMap.get(enterpriseName).getIndustry());
                 csvOut[cellId + 1][4] = String.valueOf(Float.valueOf(csvOut[cellId + 1][4]) + feasibleNoxDischargeAmount);
                 csvOut[cellId + 1][8] = String.valueOf(Float.valueOf(csvOut[cellId + 1][8]) + feasibleSo2DischargeAmount);
             }
@@ -99,6 +104,13 @@ public class EmissionReduction {
 
     public static String[][][] generateConventionControlArray(String startDate, String startTime, int period, String industry, String removalEfficiency) throws Exception {
         String[][][] perDayEmissionInPeriod = new String[period][4536][11];
+        String enterpriseLocationFilePath = System.getProperty("user.dir") + "/src/main/resources/data/enterprise_location.csv";
+        Map<String, EnterpriseProperty> enterprisePropertyMap = EnterpriseInfoData.getEnterprisePropertyMap(enterpriseLocationFilePath);
+        //enterprisePropertyMap是否有值？
+        System.out.println("enterprisePropertyMap:" + enterprisePropertyMap.size());
+        for (Map.Entry<String, EnterpriseProperty> entry : enterprisePropertyMap.entrySet()) {
+            System.out.println(entry.getKey()+" "+entry.getValue().getIndustry());
+        }
         //初始化为零
         for (int i = 0; i < period; i++) {
             for (int j = 0; j < perDayEmissionInPeriod[0].length; j++) {
@@ -114,6 +126,7 @@ public class EmissionReduction {
             for (int j = 0; j < 24; j++) {
                 String time = TimeUtil.timeHourIncrement(startTime, j);
                 Map<EnterpriseOutletInfo, DischargeAmount> conventionControlInfoMap = EmissionReduction.getConventionControlInfo(date, time, removalEfficiency);
+                //打印查库数据，验证可查
                 for (Map.Entry<EnterpriseOutletInfo, DischargeAmount> entry : conventionControlInfoMap.entrySet()) {
                     EnterpriseOutletInfo eoi = entry.getKey();
                     DischargeAmount da = entry.getValue();
@@ -121,17 +134,40 @@ public class EmissionReduction {
                     String outletName = eoi.getOutletName();
                     Float feasibleNoxDischargeAmount = Float.valueOf(da.getFeasibleNoxDischargeAmount());
                     Float feasibleSo2DischargeAmount = Float.valueOf(da.getFeasibleSo2DischargeAmount());
+                    //System.out.println("enterpriseName:" + enterpriseName + ";outletName:" + outletName + ";feasibleNoxDischargeAmount:" + feasibleNoxDischargeAmount + ";feasibleSo2DischargeAmount:" + feasibleSo2DischargeAmount);
+                }
+                for (Map.Entry<EnterpriseOutletInfo, DischargeAmount> entry : conventionControlInfoMap.entrySet()) {
+                    EnterpriseOutletInfo eoi = entry.getKey();
+                    DischargeAmount da = entry.getValue();
+                    String enterpriseName = eoi.getEnterpriseName();
+                    String outletName = eoi.getOutletName();
+                    Float feasibleNoxDischargeAmount = Float.valueOf(da.getFeasibleNoxDischargeAmount());
+                    Float feasibleSo2DischargeAmount = Float.valueOf(da.getFeasibleSo2DischargeAmount());
+                    //enterprisePropertyMap的值
+                    //System.out.println("enterpriseName:" + enterpriseName + ";outletName:" + outletName + ";feasibleNoxDischargeAmount:" + feasibleNoxDischargeAmount + ";feasibleSo2DischargeAmount:" + feasibleSo2DischargeAmount);
                     //通过企业名找到行业，企业位置ID
                     //先确定企业行业，才能确定写入此文件。确定行业符合则排放数据写入
                     //企业位置ID确定写入的位置
-                    if (industry.equals(EnterpriseInfoData.enterprisePropertyMap.get(enterpriseName).getIndustry())) {
-                        Integer cellId = Integer.valueOf(EnterpriseInfoData.enterprisePropertyMap.get(enterpriseName).getIndustry());
+                    if (enterprisePropertyMap.get(enterpriseName) != null) {
+                        System.out.println("industry:" + industry);
+                        System.out.println("getIndustry:" + enterprisePropertyMap.get(enterpriseName).getIndustry());
+                    }
+                    if ((enterprisePropertyMap.get(enterpriseName) != null) && (industry.equals(enterprisePropertyMap.get(enterpriseName).getIndustry()))) {
+                        Integer cellId = Integer.valueOf(enterprisePropertyMap.get(enterpriseName).getCellId());
                         perDayEmissionInPeriod[i][cellId + 1][2] = String.valueOf(Float.valueOf(perDayEmissionInPeriod[i][cellId + 1][2]) + feasibleNoxDischargeAmount);
                         perDayEmissionInPeriod[i][cellId + 1][6] = String.valueOf(Float.valueOf(perDayEmissionInPeriod[i][cellId + 1][6]) + feasibleSo2DischargeAmount);
+                        System.out.println("==============" + perDayEmissionInPeriod[i][cellId + 1][2] + " " + perDayEmissionInPeriod[i][cellId + 1][6]);
                     }
                 }
             }
         }
+        //计算perDayEmissionInPeriod是否正常
+        /*for(int i=0;i<perDayEmissionInPeriod[0].length;i++){
+            for(int j=0;j<perDayEmissionInPeriod[0][0].length;j++){
+                System.out.print(perDayEmissionInPeriod[0][i][j]+" ");
+            }
+            System.out.println();
+        }*/
         //计算年化
         for (int i = 0; i < period; i++) {
             for (int j = 0; j < perDayEmissionInPeriod[0].length; j++) {
@@ -199,7 +235,7 @@ public class EmissionReduction {
         String[][] avgDayEmissionInPeriod = EmissionReduction.generateConventionControlAvgArray(perDayEmissionInPeriod);
         String[][][] diffPerDayEmissionInPeriod = EmissionReduction.generateDifferenceConventionControlArray(perDayEmissionInPeriod, avgDayEmissionInPeriod);
 
-        String[] headers = new String[]{TimeUtil.dateDeleteChinese(startDate)};
+        String[] headers = new String[]{TimeUtil.dateDeleteChinese(startDate) + "00"};
         String[][] csvOut = new String[4537][13];
 
         csvOut[0][0] = "nrow";
@@ -222,8 +258,8 @@ public class EmissionReduction {
         }
 
         String[][] csvOutAvg = new String[4537][13];
-        for(int i=0;i<csvOut.length;i++){
-            for(int j=0;j<csvOut[0].length;j++){
+        for (int i = 0; i < csvOut.length; i++) {
+            for (int j = 0; j < csvOut[0].length; j++) {
                 csvOutAvg[i][j] = csvOut[i][j];
             }
         }
@@ -234,8 +270,8 @@ public class EmissionReduction {
         }
 
         String[][] csvOutDiff = new String[4537][13];
-        for(int i=0;i<csvOut.length;i++){
-            for(int j=0;j<csvOut[0].length;j++){
+        for (int i = 0; i < csvOut.length; i++) {
+            for (int j = 0; j < csvOut[0].length; j++) {
                 csvOutDiff[i][j] = csvOut[i][j];
             }
         }

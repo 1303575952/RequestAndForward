@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class EnterpriseInfoData {
 
-    public static Map<String, EnterpriseProperty> enterprisePropertyMap = new HashMap<String, EnterpriseProperty>();
+    //public static Map<String, EnterpriseProperty> enterprisePropertyMap = new HashMap<String, EnterpriseProperty>();
 
 
     public static List<CSVRecord> readCSV(String filePath, String[] headers) throws IOException {
@@ -58,8 +58,8 @@ public class EnterpriseInfoData {
      * @return
      * @throws Exception
      */
-    public static void getEnterprisePropertyMap(String enterpriseFilePath) throws Exception {
-
+    public static Map<String, EnterpriseProperty> getEnterprisePropertyMap(String enterpriseFilePath) throws Exception {
+        Map<String, EnterpriseProperty> enterprisePropertyMap = new HashMap<String, EnterpriseProperty>();
         String[] headers = new String[]{"企业编号", "企业名称", "企业分类", "企业经度", "企业纬度", "格子0", "排口名称"};
         List<CSVRecord> records = EnterpriseInfoData.readCSV(enterpriseFilePath, headers);
         if (null != records) {
@@ -69,11 +69,12 @@ public class EnterpriseInfoData {
                         new EnterpriseProperty(records.get(i).get("企业分类"), Integer.valueOf(records.get(i).get("格子0"))));
             }
         }
+        return enterprisePropertyMap;
     }
 
     public static void main(String[] args) throws Exception {
         String enterpriseLocationFilePath = System.getProperty("user.dir") + "/src/main/resources/data/enterprise_location.csv";
-        //Map<String, EnterpriseProperty> enterprisePropertyMap = EnterpriseInfoData.getEnterprisePropertyMap(enterpriseLocationFilePath);
+        Map<String, EnterpriseProperty> enterprisePropertyMap = EnterpriseInfoData.getEnterprisePropertyMap(enterpriseLocationFilePath);
         for (Map.Entry<String, EnterpriseProperty> entry : enterprisePropertyMap.entrySet()) {
             System.out.print(entry.getKey() + "\t");
             System.out.print(entry.getValue());
