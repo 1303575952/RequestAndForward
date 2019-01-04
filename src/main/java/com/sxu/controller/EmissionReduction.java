@@ -106,10 +106,10 @@ public class EmissionReduction {
         String[][][] perDayEmissionInPeriod = new String[period][4536][11];
         String enterpriseLocationFilePath = System.getProperty("user.dir") + "/src/main/resources/data/enterprise_location.csv";
         Map<String, EnterpriseProperty> enterprisePropertyMap = EnterpriseInfoData.getEnterprisePropertyMap(enterpriseLocationFilePath);
-        //enterprisePropertyMap是否有值？
+        //enterprisePropertyMap是否有值？是
         System.out.println("enterprisePropertyMap:" + enterprisePropertyMap.size());
         for (Map.Entry<String, EnterpriseProperty> entry : enterprisePropertyMap.entrySet()) {
-            System.out.println(entry.getKey()+" "+entry.getValue().getIndustry());
+            System.out.println(entry.getKey() + " " + entry.getValue().getIndustry());
         }
         //初始化为零
         for (int i = 0; i < period; i++) {
@@ -148,15 +148,18 @@ public class EmissionReduction {
                     //通过企业名找到行业，企业位置ID
                     //先确定企业行业，才能确定写入此文件。确定行业符合则排放数据写入
                     //企业位置ID确定写入的位置
-                    if (enterprisePropertyMap.get(enterpriseName) != null) {
+                    /*if (enterprisePropertyMap.get(enterpriseName) != null) {
                         System.out.println("industry:" + industry);
                         System.out.println("getIndustry:" + enterprisePropertyMap.get(enterpriseName).getIndustry());
-                    }
+                    }*/
                     if ((enterprisePropertyMap.get(enterpriseName) != null) && (industry.equals(enterprisePropertyMap.get(enterpriseName).getIndustry()))) {
                         Integer cellId = Integer.valueOf(enterprisePropertyMap.get(enterpriseName).getCellId());
-                        perDayEmissionInPeriod[i][cellId + 1][2] = String.valueOf(Float.valueOf(perDayEmissionInPeriod[i][cellId + 1][2]) + feasibleNoxDischargeAmount);
-                        perDayEmissionInPeriod[i][cellId + 1][6] = String.valueOf(Float.valueOf(perDayEmissionInPeriod[i][cellId + 1][6]) + feasibleSo2DischargeAmount);
-                        System.out.println("==============" + perDayEmissionInPeriod[i][cellId + 1][2] + " " + perDayEmissionInPeriod[i][cellId + 1][6]);
+                        System.out.println("cellId:" + cellId);
+                        if (cellId.intValue() >= 0) {
+                            perDayEmissionInPeriod[i][cellId + 1][2] = String.valueOf(Float.valueOf(perDayEmissionInPeriod[i][cellId + 1][2]) + feasibleNoxDischargeAmount);
+                            perDayEmissionInPeriod[i][cellId + 1][6] = String.valueOf(Float.valueOf(perDayEmissionInPeriod[i][cellId + 1][6]) + feasibleSo2DischargeAmount);
+                        }
+                        //System.out.println("==============" + perDayEmissionInPeriod[i][cellId + 1][2] + " " + perDayEmissionInPeriod[i][cellId + 1][6]);
                     }
                 }
             }
