@@ -41,13 +41,17 @@ public class TimeUtil {
         return time;
     }
 
+    /**
+     * DB数据转csv定时任务的时间
+     * @return
+     */
     public static Date get2CSVDate() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, 2019);
         calendar.set(Calendar.MONTH, 00);
-        calendar.set(Calendar.DAY_OF_MONTH, 02);
-        calendar.set(Calendar.HOUR_OF_DAY, 01);
-        calendar.set(Calendar.MINUTE, 20);
+        calendar.set(Calendar.DAY_OF_MONTH, 25);
+        calendar.set(Calendar.HOUR_OF_DAY, 00);
+        calendar.set(Calendar.MINUTE, 00);
         calendar.set(Calendar.SECOND, 00);
         Date time = calendar.getTime();
         return time;

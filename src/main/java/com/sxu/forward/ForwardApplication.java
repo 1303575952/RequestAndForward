@@ -1,6 +1,5 @@
 package com.sxu.forward;
 
-import com.sxu.timetask.ConventionalControl2CSV;
 import com.sxu.timetask.ConventionalControlAvgAndDiff2CSV;
 import com.sxu.timetask.ConventionalControlData2DB;
 import com.sxu.util.TimeUtil;

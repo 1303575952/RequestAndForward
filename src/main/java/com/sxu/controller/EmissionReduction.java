@@ -14,23 +14,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 减排情况
+ * 管控方案下的排放数据写csv
  */
 public class EmissionReduction {
 
     /**
-     * 找到同一时间同一减排方案的所有企业，参数:日期，时间，减排方案
-     * 清华提供的常规管控三种方案，每一条数据里各种污染物的效率是不是都是相同的？这里假设是相同的
+     * 生成某【管控方案、管控方案生成时间、管控方案开始时间】下每一个排口的排放值
+     * 找到同一【管控方案、管控方案生成时间、管控方案开始时间】的所有企业排口排放數據，参数:【管控方案、管控方案生成时间、管控方案开始时间（日期、时间）】
      */
-    public static Map<EnterpriseOutletInfo, DischargeAmount> getConventionControlInfo(String date, String time, String removalEfficiency) throws Exception {
+    public static Map<EnterpriseOutletInfo, DischargeAmount> getConventionControlInfo(String scheme, String timestamp, String date, String time) throws Exception {
         ResultSet rs;
         Connection conn = JDBCDao.getConn();
         PreparedStatement selectConventionControlInfo =
-                conn.prepareStatement("select enterprise_name,outlet_name,feasible_nox_discharge_amount,feasible_so2_discharge_amount from conventional_control_info where date=? and time=? and feasible_nitrogen_removal_efficiency_value=? and feasible_desulfurization_efficiency_value=?");
-        selectConventionControlInfo.setString(1, date);
-        selectConventionControlInfo.setString(2, time);
-        selectConventionControlInfo.setString(3, removalEfficiency);
-        selectConventionControlInfo.setString(4, removalEfficiency);
+                conn.prepareStatement("select enterprise_name,outlet_name,feasible_nox_discharge_amount,feasible_so2_discharge_amount from conventional_control_info where scheme=? and date=? and time=?");
+        selectConventionControlInfo.setString(1, scheme);
+        selectConventionControlInfo.setString(2, date);
+        selectConventionControlInfo.setString(3, time);
         //System.out.println(selectConventionControlInfo.toString());
         rs = selectConventionControlInfo.executeQuery();
 
@@ -93,24 +92,25 @@ public class EmissionReduction {
 
     /**
      * 从startDate+startTime开始的period天内的排放数据，period个表格，每个表格存一天的年化总量（不存其他数据）
-     *
      * @param startDate
      * @param startTime
      * @param period
      * @param industry
-     * @param removalEfficiency
+     * @param scheme
+     * @param timestamp
      * @return
+     * @throws Exception
      */
 
-    public static String[][][] generateConventionControlArray(String startDate, String startTime, int period, String industry, String removalEfficiency) throws Exception {
+    public static String[][][] generateConventionControlArray(String startDate, String startTime, int period, String industry, String scheme, String timestamp) throws Exception {
         String[][][] perDayEmissionInPeriod = new String[period][4536][11];
         String enterpriseLocationFilePath = System.getProperty("user.dir") + "/src/main/resources/data/enterprise_location.csv";
         Map<String, EnterpriseProperty> enterprisePropertyMap = EnterpriseInfoData.getEnterprisePropertyMap(enterpriseLocationFilePath);
         //enterprisePropertyMap是否有值？是
-        System.out.println("enterprisePropertyMap:" + enterprisePropertyMap.size());
+        /*System.out.println("enterprisePropertyMap:" + enterprisePropertyMap.size());
         for (Map.Entry<String, EnterpriseProperty> entry : enterprisePropertyMap.entrySet()) {
             System.out.println(entry.getKey() + " " + entry.getValue().getIndustry());
-        }
+        }*/
         //初始化为零
         for (int i = 0; i < period; i++) {
             for (int j = 0; j < perDayEmissionInPeriod[0].length; j++) {
@@ -124,9 +124,15 @@ public class EmissionReduction {
             String date = TimeUtil.dateDayIncrement(startDate, i);
             //24小时的数据累加
             for (int j = 0; j < 24; j++) {
-                String time = TimeUtil.timeHourIncrement(startTime, j);
-                Map<EnterpriseOutletInfo, DischargeAmount> conventionControlInfoMap = EmissionReduction.getConventionControlInfo(date, time, removalEfficiency);
-                //打印查库数据，验证可查
+                String time = "0-12时";
+                if (j < 12) {
+                    time = "0-12时";
+                } else {
+                    time = "12-24时";
+                }
+                Map<EnterpriseOutletInfo, DischargeAmount> conventionControlInfoMap = EmissionReduction.getConventionControlInfo(scheme, timestamp, date, time);
+                //System.out.println("conventionControlInfoMap size=========="+conventionControlInfoMap.size());
+                //打印查库数据
                 for (Map.Entry<EnterpriseOutletInfo, DischargeAmount> entry : conventionControlInfoMap.entrySet()) {
                     EnterpriseOutletInfo eoi = entry.getKey();
                     DischargeAmount da = entry.getValue();
@@ -134,7 +140,7 @@ public class EmissionReduction {
                     String outletName = eoi.getOutletName();
                     Float feasibleNoxDischargeAmount = Float.valueOf(da.getFeasibleNoxDischargeAmount());
                     Float feasibleSo2DischargeAmount = Float.valueOf(da.getFeasibleSo2DischargeAmount());
-                    //System.out.println("enterpriseName:" + enterpriseName + ";outletName:" + outletName + ";feasibleNoxDischargeAmount:" + feasibleNoxDischargeAmount + ";feasibleSo2DischargeAmount:" + feasibleSo2DischargeAmount);
+                    System.out.println("enterpriseName:" + enterpriseName + ";outletName:" + outletName + ";feasibleNoxDischargeAmount:" + feasibleNoxDischargeAmount + ";feasibleSo2DischargeAmount:" + feasibleSo2DischargeAmount);
                 }
                 for (Map.Entry<EnterpriseOutletInfo, DischargeAmount> entry : conventionControlInfoMap.entrySet()) {
                     EnterpriseOutletInfo eoi = entry.getKey();
@@ -222,19 +228,19 @@ public class EmissionReduction {
     }
 
     /**
-     * 把均值写入csv
-     *
+     * 均值写入csv
      * @param startDate
      * @param startTime
      * @param period
      * @param industry
-     * @param removalEfficiency
+     * @param scheme
+     * @param timestamp
      * @param avgDayEmissionInPeriodCSVPath
      * @param diffDayEmissionInPeriodCSVPath
      * @throws Exception
      */
-    public static void avgAndDiffDayEmissionInPeriod2CSV(String startDate, String startTime, int period, String industry, String removalEfficiency, String avgDayEmissionInPeriodCSVPath, String diffDayEmissionInPeriodCSVPath) throws Exception {
-        String[][][] perDayEmissionInPeriod = EmissionReduction.generateConventionControlArray(startDate, startTime, period, industry, removalEfficiency);
+    public static void avgAndDiffDayEmissionInPeriod2CSV(String startDate, String startTime, int period, String industry, String scheme, String timestamp, String avgDayEmissionInPeriodCSVPath, String diffDayEmissionInPeriodCSVPath) throws Exception {
+        String[][][] perDayEmissionInPeriod = EmissionReduction.generateConventionControlArray(startDate, startTime, period, industry, scheme, timestamp);
         String[][] avgDayEmissionInPeriod = EmissionReduction.generateConventionControlAvgArray(perDayEmissionInPeriod);
         String[][][] diffPerDayEmissionInPeriod = EmissionReduction.generateDifferenceConventionControlArray(perDayEmissionInPeriod, avgDayEmissionInPeriod);
 

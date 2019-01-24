@@ -12,6 +12,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+/**
+ * 企业排口数据入库
+ */
 public class ConventionalControlInfoData {
     /**
      * 每一个监控点数据常规管控数据入库
@@ -25,6 +28,7 @@ public class ConventionalControlInfoData {
         JSONObject jo = JsonEntity.jsonEntity;
         System.out.println("jo" + jo);
         JSONArray results = jo.getJSONArray("results");
+        //results正常情况下存放三种管控方案
         if (results.size() > 0) {
             Connection conn = JDBCDao.getConn();
             PreparedStatement addConventionalControlInfo = null;
@@ -34,6 +38,10 @@ public class ConventionalControlInfoData {
                     JSONObject eachJO = ja.getJSONObject(j);
                     String enterpriseName = eachJO.getString("企业名称");
                     String outletName = eachJO.getString("监控点名称");
+                    //添加方案几字段
+                    String scheme = String.valueOf(i + 1);
+                    //添加入库时间字段，目前是时间戳
+                    String timestamp = String.valueOf(System.currentTimeMillis());
                     String date = eachJO.getString("日期");
                     String time = eachJO.getString("时间");
                     JSONObject feasibleJson = eachJO.getJSONObject("可行");
@@ -97,29 +105,33 @@ public class ConventionalControlInfoData {
                         feasibleDustRemovalCostValue = feasibleJson.getJSONObject("除尘所需成本").getString("数值");
                     }
 
-                    addConventionalControlInfo = conn.prepareStatement("insert into conventional_control_info values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                    addConventionalControlInfo = conn.prepareStatement("insert into conventional_control_info values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
                     addConventionalControlInfo.setString(1, enterpriseName);
                     addConventionalControlInfo.setString(2, outletName);
-                    addConventionalControlInfo.setString(3, date);
-                    addConventionalControlInfo.setString(4, time);
-                    addConventionalControlInfo.setString(5, feasibleNoxDischargeUnit);
-                    addConventionalControlInfo.setString(6, feasibleNoxDischargeAmount);
-                    addConventionalControlInfo.setString(7, feasibleNitrogenRemovalEfficiencyUnit);
-                    addConventionalControlInfo.setString(8, feasibleNitrogenRemovalEfficiencyValue);
-                    addConventionalControlInfo.setString(9, feasibleNitrogenRemovalCostUnit);
-                    addConventionalControlInfo.setString(10, feasibleNitrogenRemovalCostValue);
-                    addConventionalControlInfo.setString(11, feasibleSo2DischargeUnit);
-                    addConventionalControlInfo.setString(12, feasibleSo2DischargeAmount);
-                    addConventionalControlInfo.setString(13, feasibleDesulfurizationEfficiencyUnit);
-                    addConventionalControlInfo.setString(14, feasibleDesulfurizationEfficiencyValue);
-                    addConventionalControlInfo.setString(15, feasibleDesulfurizationCostUnit);
-                    addConventionalControlInfo.setString(16, feasibleDesulfurizationCostValue);
-                    addConventionalControlInfo.setString(17, feasibleDustDischargeUnit);
-                    addConventionalControlInfo.setString(18, feasibleDustDischargeAmount);
-                    addConventionalControlInfo.setString(19, feasibleDustRemovalEfficiencyUnit);
-                    addConventionalControlInfo.setString(20, feasibleDustRemovalEfficiencyValue);
-                    addConventionalControlInfo.setString(21, feasibleDustRemovalCostUnit);
-                    addConventionalControlInfo.setString(22, feasibleDustRemovalCostValue);
+
+                    addConventionalControlInfo.setString(3, scheme);
+                    addConventionalControlInfo.setString(4, timestamp);
+
+                    addConventionalControlInfo.setString(5, date);
+                    addConventionalControlInfo.setString(6, time);
+                    addConventionalControlInfo.setString(7, feasibleNoxDischargeUnit);
+                    addConventionalControlInfo.setString(8, feasibleNoxDischargeAmount);
+                    addConventionalControlInfo.setString(9, feasibleNitrogenRemovalEfficiencyUnit);
+                    addConventionalControlInfo.setString(10, feasibleNitrogenRemovalEfficiencyValue);
+                    addConventionalControlInfo.setString(11, feasibleNitrogenRemovalCostUnit);
+                    addConventionalControlInfo.setString(12, feasibleNitrogenRemovalCostValue);
+                    addConventionalControlInfo.setString(13, feasibleSo2DischargeUnit);
+                    addConventionalControlInfo.setString(14, feasibleSo2DischargeAmount);
+                    addConventionalControlInfo.setString(15, feasibleDesulfurizationEfficiencyUnit);
+                    addConventionalControlInfo.setString(16, feasibleDesulfurizationEfficiencyValue);
+                    addConventionalControlInfo.setString(17, feasibleDesulfurizationCostUnit);
+                    addConventionalControlInfo.setString(18, feasibleDesulfurizationCostValue);
+                    addConventionalControlInfo.setString(19, feasibleDustDischargeUnit);
+                    addConventionalControlInfo.setString(20, feasibleDustDischargeAmount);
+                    addConventionalControlInfo.setString(21, feasibleDustRemovalEfficiencyUnit);
+                    addConventionalControlInfo.setString(22, feasibleDustRemovalEfficiencyValue);
+                    addConventionalControlInfo.setString(23, feasibleDustRemovalCostUnit);
+                    addConventionalControlInfo.setString(24, feasibleDustRemovalCostValue);
                     addConventionalControlInfo.execute();
                 }
             }
@@ -130,7 +142,7 @@ public class ConventionalControlInfoData {
     }
 
     /**
-     * 根据企业名和排口，把常规管控数据入库
+     * 构造请求json
      */
     public String generateConventionalControlInfoRequestJson(String method, String enterpriseName, String outletName, String date) {
         String jsonStr = "{\n" +
@@ -145,6 +157,12 @@ public class ConventionalControlInfoData {
         return jsonStr;
     }
 
+    /**
+     * 把所有企业及对应排口的常规管控数据入库
+     *
+     * @param date
+     * @throws Exception
+     */
     public void putDailyOutletConventionalControlInfo2DB(String date) throws Exception {
         String url = "http://119.90.57.34:9680/channel/do";
         HashMap<String, HashSet<String>> enterpriseOutletMap = EnterpriseOutletInfoData.getEnterpriseOutletMap();
@@ -153,7 +171,7 @@ public class ConventionalControlInfoData {
             HashSet<String> hs = entry.getValue();
             for (String str : hs) {
                 String outletName = str;
-                String jsonStr = generateConventionalControlInfoRequestJson("常规管控", enterpriseName, outletName,date);
+                String jsonStr = generateConventionalControlInfoRequestJson("常规管控", enterpriseName, outletName, date);
                 getOutletConventionalControlInfo2DB(url, jsonStr);
             }
         }
@@ -163,7 +181,7 @@ public class ConventionalControlInfoData {
         //String url = "http://119.90.57.34:9680/channel/do";
         //String jsonStr = new ConventionalControlInfoData().generateConventionalControlInfoRequestJson("常规管控", "山西长信工业有限公司", "2号烧结机尾废气排放口");
         //new ConventionalControlInfoData().getOutletConventionalControlInfo2DB(url, jsonStr);
-        String date = "2019年01月05日";
+        String date = "2019年01月27日";
         new ConventionalControlInfoData().putDailyOutletConventionalControlInfo2DB(date);
     }
 }
