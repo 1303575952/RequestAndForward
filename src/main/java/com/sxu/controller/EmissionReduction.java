@@ -1,5 +1,6 @@
 package com.sxu.controller;
 
+import com.sxu.constant.ConventionalControlConstant;
 import com.sxu.dao.JDBCDao;
 import com.sxu.data.EnterpriseInfoData;
 import com.sxu.entity.DischargeAmount;
@@ -92,6 +93,7 @@ public class EmissionReduction {
 
     /**
      * 从startDate+startTime开始的period天内的排放数据，period个表格，每个表格存一天的年化总量（不存其他数据）
+     *
      * @param startDate
      * @param startTime
      * @param period
@@ -104,7 +106,8 @@ public class EmissionReduction {
 
     public static String[][][] generateConventionControlArray(String startDate, String startTime, int period, String industry, String scheme, String timestamp) throws Exception {
         String[][][] perDayEmissionInPeriod = new String[period][4536][11];
-        String enterpriseLocationFilePath = System.getProperty("user.dir") + "/src/main/resources/data/enterprise_location.csv";
+        //String enterpriseLocationFilePath = System.getProperty("user.dir") + ConventionalControlConstant.ENTERPRISE_LOCATION_PATH;
+        String enterpriseLocationFilePath = ConventionalControlConstant.ENTERPRISE_LOCATION_PATH;
         Map<String, EnterpriseProperty> enterprisePropertyMap = EnterpriseInfoData.getEnterprisePropertyMap(enterpriseLocationFilePath);
         //enterprisePropertyMap是否有值？是
         /*System.out.println("enterprisePropertyMap:" + enterprisePropertyMap.size());
@@ -133,7 +136,7 @@ public class EmissionReduction {
                 Map<EnterpriseOutletInfo, DischargeAmount> conventionControlInfoMap = EmissionReduction.getConventionControlInfo(scheme, timestamp, date, time);
                 //System.out.println("conventionControlInfoMap size=========="+conventionControlInfoMap.size());
                 //打印查库数据
-                for (Map.Entry<EnterpriseOutletInfo, DischargeAmount> entry : conventionControlInfoMap.entrySet()) {
+                /*for (Map.Entry<EnterpriseOutletInfo, DischargeAmount> entry : conventionControlInfoMap.entrySet()) {
                     EnterpriseOutletInfo eoi = entry.getKey();
                     DischargeAmount da = entry.getValue();
                     String enterpriseName = eoi.getEnterpriseName();
@@ -141,7 +144,7 @@ public class EmissionReduction {
                     Float feasibleNoxDischargeAmount = Float.valueOf(da.getFeasibleNoxDischargeAmount());
                     Float feasibleSo2DischargeAmount = Float.valueOf(da.getFeasibleSo2DischargeAmount());
                     System.out.println("enterpriseName:" + enterpriseName + ";outletName:" + outletName + ";feasibleNoxDischargeAmount:" + feasibleNoxDischargeAmount + ";feasibleSo2DischargeAmount:" + feasibleSo2DischargeAmount);
-                }
+                }*/
                 for (Map.Entry<EnterpriseOutletInfo, DischargeAmount> entry : conventionControlInfoMap.entrySet()) {
                     EnterpriseOutletInfo eoi = entry.getKey();
                     DischargeAmount da = entry.getValue();
@@ -229,6 +232,7 @@ public class EmissionReduction {
 
     /**
      * 均值写入csv
+     *
      * @param startDate
      * @param startTime
      * @param period

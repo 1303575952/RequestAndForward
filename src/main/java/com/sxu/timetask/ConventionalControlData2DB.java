@@ -20,10 +20,13 @@ public class ConventionalControlData2DB extends TimerTask {
         String date = sdf.format(new Date());
         ConventionalControlInfoData conventionalControlInfoData = new ConventionalControlInfoData();
         try {
-            for (int i = 0; i < period; i++) {
+            /*for (int i = 0; i < period; i++) {
                 date = TimeUtil.dateDayIncrement(date, i);
                 conventionalControlInfoData.putDailyOutletConventionalControlInfo2DB(date);
-            }
+            }*/
+            date = TimeUtil.dateDayIncrement(date, period);
+            conventionalControlInfoData.putDailyOutletConventionalControlInfo2DB(date);
+
         } catch (Exception e) {
             e.printStackTrace();
         }

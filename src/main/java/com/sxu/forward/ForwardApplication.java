@@ -19,8 +19,7 @@ public class ForwardApplication {
     public static void main(String[] args) {
 
         Timer timer = new Timer();
-        //timer.schedule(new ConventionalControlData2DB(), TimeUtil.get2DBDate(), 86400000);
-        //timer.schedule(new ConventionalControl2CSV(), TimeUtil.get2CSVDate(), 86400000);
+        timer.schedule(new ConventionalControlData2DB(), TimeUtil.get2DBDate(), 86400000);
         timer.schedule(new ConventionalControlAvgAndDiff2CSV(), TimeUtil.get2CSVDate(), 86400000);
     }
 

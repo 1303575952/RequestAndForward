@@ -181,7 +181,7 @@ public class ConventionalControlInfoData {
         //String url = "http://119.90.57.34:9680/channel/do";
         //String jsonStr = new ConventionalControlInfoData().generateConventionalControlInfoRequestJson("常规管控", "山西长信工业有限公司", "2号烧结机尾废气排放口");
         //new ConventionalControlInfoData().getOutletConventionalControlInfo2DB(url, jsonStr);
-        String date = "2019年01月27日";
+        String date = "2019年01月28日";
         new ConventionalControlInfoData().putDailyOutletConventionalControlInfo2DB(date);
     }
 }
