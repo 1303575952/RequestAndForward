@@ -17,7 +17,7 @@ public class TimeUtil {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, 2019);
         calendar.set(Calendar.MONTH, 00);
-        calendar.set(Calendar.DAY_OF_MONTH, 25);
+        calendar.set(Calendar.DAY_OF_MONTH, 26);
         calendar.set(Calendar.HOUR_OF_DAY, 00);
         calendar.set(Calendar.MINUTE, 00);
         calendar.set(Calendar.SECOND, 00);
@@ -34,7 +34,7 @@ public class TimeUtil {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, 2019);
         calendar.set(Calendar.MONTH, 00);
-        calendar.set(Calendar.DAY_OF_MONTH, 25);
+        calendar.set(Calendar.DAY_OF_MONTH, 26);
         calendar.set(Calendar.HOUR_OF_DAY, 00);
         calendar.set(Calendar.MINUTE, 00);
         calendar.set(Calendar.SECOND, 00);

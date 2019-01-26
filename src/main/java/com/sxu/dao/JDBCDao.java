@@ -12,7 +12,7 @@ public class JDBCDao {
     public static String PORT = "3306";
     public static String DATABASE_NAME = "control";
     public static String USER_NAME = "root";
-    public static String PASSWORD = "123456";
+    public static String PASSWORD = "root";
 
     /**
      * 获取数据库连接
